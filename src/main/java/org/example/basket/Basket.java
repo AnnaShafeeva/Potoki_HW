@@ -45,7 +45,6 @@ public class Basket implements Serializable {
                     Integer.parseInt(productsList[i][1]) * itemsInCart[i]) + " руб";
             basketList.add(s);
             jsonObject.put(productsList[i][0], basketList.get(i));
-//            System.out.println(jsonObject);
         }
         try (BufferedWriter saveCartToFile = new BufferedWriter(new FileWriter(jsonFile))) {
             saveCartToFile.write(jsonObject.toJSONString());
@@ -105,7 +104,7 @@ public class Basket implements Serializable {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        // Сначала разбиваем файл на массив построчно
+
         String[] splitLines = dataFromFile.split("\\n");
         String[][] productsListFromFile = new String[splitLines.length][2];
         for (int i = 0; i < splitLines.length; i++) {
