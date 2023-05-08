@@ -1,5 +1,7 @@
-import basket.Basket;
+package org.example;
 
+import org.example.basket.Basket;
+import org.example.log.ClientLog;
 import java.io.File;
 import java.util.Scanner;
 
@@ -9,19 +11,21 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Basket basket = new Basket(PRODUCTS);
-        File basketTxt = new File("basket.txt");
+        File basketTxt = new File("basket.json");
+        File operationsLog = new File("log.csv");
+        ClientLog log = new ClientLog();
         if (basketTxt.exists()) {
-            Basket loadedBasket = Basket.loadFromFile(basketTxt);
+            String[][] loadedBasket = Basket.loadFromJSON(basketTxt);
             for (int i = 0; i < PRODUCTS.length; i++) {
-                for (int j = 0; j < loadedBasket.getProductsList().length; j++) {
-                    if (loadedBasket.getProductsList()[j][0].equals(PRODUCTS[i][0])) {
-                        basket.addToCart(i, Integer.parseInt(loadedBasket.getProductsList()[j][1]));
+                for (int j = 0; j < loadedBasket.length; j++) {
+                    if (loadedBasket[j][0].equals(PRODUCTS[i][0])) {
+                        basket.addToCart(i, Integer.parseInt(loadedBasket[j][1]));
                     }
                 }
             }
             basket.printCart();
         } else {
-            System.out.println("Список не найден. Будет создан новый файл записи");
+            System.out.println("Ранее созданная корзина отсутствует, будет формироваться новая");
         }
         System.out.println();
         while (true) {
@@ -34,7 +38,7 @@ public class Main {
                 break;
             }
 
-            String[] parts = choice.split(" "); // создаем массив из номера товара и количества
+            String[] parts = choice.split(" ");
             if (parts.length != 2) {
                 System.out.println("Некорректный ввод! Нужно ввести два числа!");
                 continue;
@@ -60,9 +64,11 @@ public class Main {
             }
             System.out.println("Продукт добавлен в корзину: " + PRODUCTS[productNumber][0] + ",в количестве " + productCount + " шт");
             basket.addToCart(productNumber, productCount);
-            basket.saveTxt(basketTxt);
+            basket.saveJSON(basketTxt);
         }
         basket.printCart();
+        log.printLog();
+        log.exportAsCSV(operationsLog);
     }
 
     static void printList() {
